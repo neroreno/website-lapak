@@ -9,12 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen" x-data="adminApp()" x-init="init()">
 
-    {{-- ===== TOAST NOTIFICATION ===== --}}
+    
     <div x-show="toast.show" x-transition class="fixed top-4 right-4 z-[100] max-w-sm" style="display:none;">
         <div class="bg-slate-800 text-white px-5 py-4 rounded-2xl shadow-xl flex items-center gap-3">
             <span x-text="toast.type === 'success' ? '✅' : '❌'"></span>
@@ -22,10 +22,10 @@
         </div>
     </div>
 
-    {{-- ===== SIDEBAR & HEADER ===== --}}
+    
     <div class="flex h-screen overflow-hidden">
         
-        {{-- Sidebar --}}
+        
         <aside class="w-64 bg-slate-900 text-white flex flex-col hidden md:flex shrink-0">
             <div class="p-5 border-b border-slate-800">
                 <div class="flex items-center gap-2 mb-1">
@@ -51,12 +51,12 @@
                 </button>
                 <button @click="activeTab = 'feedbacks'" :class="activeTab === 'feedbacks' ? 'bg-amber-500 text-white' : 'text-slate-300 hover:bg-slate-800'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors">
                     <span></span> Aspirasi & Komplain
-                    @if($pendingFeedbacks > 0)<span class="ml-auto bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full">{{ $pendingFeedbacks }}</span>@endif
+                    <?php if($pendingFeedbacks > 0): ?><span class="ml-auto bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full"><?php echo e($pendingFeedbacks); ?></span><?php endif; ?>
                 </button>
             </nav>
             <div class="p-4 border-t border-slate-800">
                 <form action="/logout" method="POST">
-                    @csrf
+                    <?php echo csrf_field(); ?>
                     <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-rose-400 hover:bg-rose-950 transition-colors">
                         <span></span> Keluar
                     </button>
@@ -64,42 +64,42 @@
             </div>
         </aside>
 
-        {{-- Main Content --}}
+        
         <main class="flex-1 flex flex-col h-screen overflow-hidden">
             <header class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center shrink-0">
                 <h2 class="font-extrabold text-slate-800 text-lg uppercase" x-text="activeTab.replace('dashboard', 'Ringkasan').replace('orders', 'Kelola Pesanan').replace('sales', 'Laporan Penjualan').replace('menus', 'Manajemen Menu').replace('chat', 'Kirim Pengumuman').replace('feedbacks', 'Masukan Pelanggan')"></h2>
                 <div class="flex items-center gap-3">
-                    <span class="text-sm font-bold text-slate-600">{{ auth()->user()->name }} (Admin)</span>
+                    <span class="text-sm font-bold text-slate-600"><?php echo e(auth()->user()->name); ?> (Admin)</span>
                     <a href="/" target="_blank" class="px-3 py-1.5 rounded-lg bg-slate-100 text-xs font-bold text-slate-600 hover:bg-slate-200 transition-colors border border-slate-200">Lihat Web ↗</a>
                 </div>
             </header>
 
             <div class="flex-1 overflow-y-auto p-6 bg-slate-50">
                 
-                {{-- ===== TAB: DASHBOARD ===== --}}
+                
                 <div x-show="activeTab === 'dashboard'" x-transition>
-                    {{-- Stats Grid --}}
+                    
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                             <p class="text-slate-500 text-sm font-semibold mb-1">Total Pesanan</p>
-                            <p class="text-3xl font-black text-slate-800">{{ number_format($totalOrders) }}</p>
+                            <p class="text-3xl font-black text-slate-800"><?php echo e(number_format($totalOrders)); ?></p>
                         </div>
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                             <p class="text-slate-500 text-sm font-semibold mb-1">Total Pendapatan</p>
-                            <p class="text-3xl font-black text-amber-600">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</p>
+                            <p class="text-3xl font-black text-amber-600">Rp <?php echo e(number_format($totalRevenue, 0, ',', '.')); ?></p>
                         </div>
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                             <p class="text-slate-500 text-sm font-semibold mb-1">Pesanan Aktif (PO)</p>
-                            <p class="text-3xl font-black text-blue-600">{{ $pendingOrders }}</p>
+                            <p class="text-3xl font-black text-blue-600"><?php echo e($pendingOrders); ?></p>
                         </div>
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                             <p class="text-slate-500 text-sm font-semibold mb-1">Total Member</p>
-                            <p class="text-3xl font-black text-emerald-600">{{ $totalMembers }}</p>
+                            <p class="text-3xl font-black text-emerald-600"><?php echo e($totalMembers); ?></p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        {{-- Recent Orders --}}
+                        
                         <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
                                 <h3 class="font-bold text-slate-800">Pesanan Masuk Terbaru</h3>
@@ -111,38 +111,38 @@
                                         <tr><th class="px-5 py-3">No Pesanan</th><th class="px-5 py-3">Pelanggan</th><th class="px-5 py-3">Total</th><th class="px-5 py-3">Status</th></tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100">
-                                        @foreach($recentOrders->take(5) as $order)
+                                        <?php $__currentLoopData = $recentOrders->take(5); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <tr class="hover:bg-slate-50">
-                                            <td class="px-5 py-3 font-semibold">{{ $order->order_number }} @if($order->is_preorder)<span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full ml-1">PO</span>@endif</td>
-                                            <td class="px-5 py-3">{{ $order->customer_name }}</td>
-                                            <td class="px-5 py-3 font-bold text-slate-700">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
-                                            <td class="px-5 py-3"><span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase @if($order->order_status=='pending') bg-amber-100 text-amber-700 @elseif($order->order_status=='delivered') bg-emerald-100 text-emerald-700 @else bg-blue-100 text-blue-700 @endif">{{ $order->order_status }}</span></td>
+                                            <td class="px-5 py-3 font-semibold"><?php echo e($order->order_number); ?> <?php if($order->is_preorder): ?><span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full ml-1">PO</span><?php endif; ?></td>
+                                            <td class="px-5 py-3"><?php echo e($order->customer_name); ?></td>
+                                            <td class="px-5 py-3 font-bold text-slate-700">Rp <?php echo e(number_format($order->total, 0, ',', '.')); ?></td>
+                                            <td class="px-5 py-3"><span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase <?php if($order->order_status=='pending'): ?> bg-amber-100 text-amber-700 <?php elseif($order->order_status=='delivered'): ?> bg-emerald-100 text-emerald-700 <?php else: ?> bg-blue-100 text-blue-700 <?php endif; ?>"><?php echo e($order->order_status); ?></span></td>
                                         </tr>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
 
-                        {{-- Top Menus --}}
+                        
                         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
                             <h3 class="font-bold text-slate-800 mb-4">Menu Terlaris</h3>
                             <div class="space-y-4">
-                                @foreach($topMenus as $menu)
+                                <?php $__currentLoopData = $topMenus; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="flex justify-between items-center">
                                     <div>
-                                        <p class="font-semibold text-sm text-slate-700">{{ $menu->menu_name }}</p>
-                                        <p class="text-xs text-slate-400">{{ $menu->total_qty }} porsi terjual</p>
+                                        <p class="font-semibold text-sm text-slate-700"><?php echo e($menu->menu_name); ?></p>
+                                        <p class="text-xs text-slate-400"><?php echo e($menu->total_qty); ?> porsi terjual</p>
                                     </div>
-                                    <span class="font-bold text-sm text-emerald-600">Rp {{ number_format($menu->total_revenue, 0, ',', '.') }}</span>
+                                    <span class="font-bold text-sm text-emerald-600">Rp <?php echo e(number_format($menu->total_revenue, 0, ',', '.')); ?></span>
                                 </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- ===== TAB: ORDERS ===== --}}
+                
                 <div x-show="activeTab === 'orders'" x-transition style="display:none;">
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                         <div class="overflow-x-auto">
@@ -157,56 +157,56 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-200">
-                                    @foreach($recentOrders as $order)
+                                    <?php $__currentLoopData = $recentOrders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr class="hover:bg-slate-50">
                                         <td class="px-5 py-4 align-top">
-                                            <p class="font-bold text-slate-800">{{ $order->order_number }}</p>
-                                            <p class="text-xs text-slate-500 mt-1">{{ $order->created_at->format('d M Y, H:i') }}</p>
-                                            @if($order->is_preorder) <span class="inline-block mt-1 bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">PRE-ORDER</span> @endif
+                                            <p class="font-bold text-slate-800"><?php echo e($order->order_number); ?></p>
+                                            <p class="text-xs text-slate-500 mt-1"><?php echo e($order->created_at->format('d M Y, H:i')); ?></p>
+                                            <?php if($order->is_preorder): ?> <span class="inline-block mt-1 bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">PRE-ORDER</span> <?php endif; ?>
                                         </td>
                                         <td class="px-5 py-4 align-top">
-                                            <p class="font-bold text-slate-700">{{ $order->customer_name }}</p>
-                                            <p class="text-xs text-slate-500">{{ $order->customer_phone }}</p>
-                                            <p class="text-xs text-slate-500 mt-1 line-clamp-2 max-w-[150px]">{{ $order->customer_address }}</p>
+                                            <p class="font-bold text-slate-700"><?php echo e($order->customer_name); ?></p>
+                                            <p class="text-xs text-slate-500"><?php echo e($order->customer_phone); ?></p>
+                                            <p class="text-xs text-slate-500 mt-1 line-clamp-2 max-w-[150px]"><?php echo e($order->customer_address); ?></p>
                                         </td>
                                         <td class="px-5 py-4 align-top">
                                             <ul class="text-xs space-y-1 text-slate-600">
-                                                @foreach($order->items as $item)
-                                                <li>• {{ $item->quantity }}x {{ $item->menu_name }}</li>
-                                                @endforeach
+                                                <?php $__currentLoopData = $order->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <li>• <?php echo e($item->quantity); ?>x <?php echo e($item->menu_name); ?></li>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </ul>
-                                            @if($order->notes) <p class="text-[10px] font-semibold text-rose-600 mt-2 p-1.5 bg-rose-50 rounded">Catatan: {{ $order->notes }}</p> @endif
+                                            <?php if($order->notes): ?> <p class="text-[10px] font-semibold text-rose-600 mt-2 p-1.5 bg-rose-50 rounded">Catatan: <?php echo e($order->notes); ?></p> <?php endif; ?>
                                         </td>
                                         <td class="px-5 py-4 align-top">
-                                            <p class="font-black text-amber-600">Rp {{ number_format($order->total, 0, ',', '.') }}</p>
-                                            <p class="text-[10px] font-bold text-slate-400 uppercase mt-1">VIA {{ $order->payment_method }}</p>
+                                            <p class="font-black text-amber-600">Rp <?php echo e(number_format($order->total, 0, ',', '.')); ?></p>
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase mt-1">VIA <?php echo e($order->payment_method); ?></p>
                                         </td>
                                         <td class="px-5 py-4 align-top">
-                                            <select @change="updateOrderStatus({{ $order->id }}, $event.target.value)" class="w-full text-xs font-bold border-slate-300 rounded-lg p-2 focus:ring-amber-500 focus:border-amber-500"
+                                            <select @change="updateOrderStatus(<?php echo e($order->id); ?>, $event.target.value)" class="w-full text-xs font-bold border-slate-300 rounded-lg p-2 focus:ring-amber-500 focus:border-amber-500"
                                                 :class="{
-                                                    'bg-amber-50 text-amber-800': '{{ $order->order_status }}' === 'pending',
-                                                    'bg-blue-50 text-blue-800': '{{ $order->order_status }}' === 'confirmed' || '{{ $order->order_status }}' === 'preparing',
-                                                    'bg-emerald-50 text-emerald-800': '{{ $order->order_status }}' === 'delivered'
+                                                    'bg-amber-50 text-amber-800': '<?php echo e($order->order_status); ?>' === 'pending',
+                                                    'bg-blue-50 text-blue-800': '<?php echo e($order->order_status); ?>' === 'confirmed' || '<?php echo e($order->order_status); ?>' === 'preparing',
+                                                    'bg-emerald-50 text-emerald-800': '<?php echo e($order->order_status); ?>' === 'delivered'
                                                 }">
-                                                <option value="pending" @if($order->order_status == 'pending') selected @endif>Pending</option>
-                                                <option value="confirmed" @if($order->order_status == 'confirmed') selected @endif>Confirmed / Diterima</option>
-                                                <option value="preparing" @if($order->order_status == 'preparing') selected @endif>Sedang Disiapkan</option>
-                                                <option value="ready" @if($order->order_status == 'ready') selected @endif>Siap Dikirim</option>
-                                                <option value="delivered" @if($order->order_status == 'delivered') selected @endif>Selesai / Dikirim</option>
-                                                <option value="cancelled" @if($order->order_status == 'cancelled') selected @endif>Dibatalkan</option>
+                                                <option value="pending" <?php if($order->order_status == 'pending'): ?> selected <?php endif; ?>>Pending</option>
+                                                <option value="confirmed" <?php if($order->order_status == 'confirmed'): ?> selected <?php endif; ?>>Confirmed / Diterima</option>
+                                                <option value="preparing" <?php if($order->order_status == 'preparing'): ?> selected <?php endif; ?>>Sedang Disiapkan</option>
+                                                <option value="ready" <?php if($order->order_status == 'ready'): ?> selected <?php endif; ?>>Siap Dikirim</option>
+                                                <option value="delivered" <?php if($order->order_status == 'delivered'): ?> selected <?php endif; ?>>Selesai / Dikirim</option>
+                                                <option value="cancelled" <?php if($order->order_status == 'cancelled'): ?> selected <?php endif; ?>>Dibatalkan</option>
                                             </select>
                                         </td>
                                     </tr>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                {{-- ===== TAB: SALES CHARTS ===== --}}
+                
                 <div x-show="activeTab === 'sales'" x-transition style="display:none;" class="space-y-6">
-                    {{-- Year Filter & Export --}}
+                    
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 flex flex-wrap gap-4 items-end justify-between shadow-sm">
                         <div class="flex flex-wrap gap-4 items-end">
                             <div>
@@ -227,9 +227,9 @@
                         </button>
                     </div>
 
-                    {{-- Charts Grid --}}
+                    
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {{-- Bar Chart: Omzet --}}
+                        
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                             <h3 class="font-bold text-slate-800 mb-1"> Omzet Penjualan per Bulan</h3>
                             <p class="text-xs text-slate-400 mb-4" x-text="'Tahun ' + selectedYear"></p>
@@ -238,7 +238,7 @@
                             </div>
                         </div>
 
-                        {{-- Line Chart: Tren Order --}}
+                        
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                             <h3 class="font-bold text-slate-800 mb-1"> Tren Jumlah Pesanan</h3>
                             <p class="text-xs text-slate-400 mb-4" x-text="'Tahun ' + selectedYear"></p>
@@ -247,7 +247,7 @@
                             </div>
                         </div>
 
-                        {{-- Pie/Doughnut Chart: Metode Bayar --}}
+                        
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                             <h3 class="font-bold text-slate-800 mb-1"> Distribusi Metode Pembayaran</h3>
                             <p class="text-xs text-slate-400 mb-4">Semua waktu</p>
@@ -258,7 +258,7 @@
                     </div>
                 </div>
 
-                {{-- ===== TAB: MENUS ===== --}}
+                
                 <div x-show="activeTab === 'menus'" x-transition style="display:none;">
                     <div class="bg-white rounded-2xl border border-slate-200 p-5 mb-6 shadow-sm flex justify-between items-center">
                         <div>
@@ -269,29 +269,29 @@
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        @foreach($menus as $menu)
+                        <?php $__currentLoopData = $menus; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex gap-4">
-                            <img src="{{ $menu->image_path }}" class="w-16 h-16 rounded-lg object-cover bg-slate-100" onerror="this.src='https://placehold.co/100x100'">
+                            <img src="<?php echo e($menu->image_path); ?>" class="w-16 h-16 rounded-lg object-cover bg-slate-100" onerror="this.src='https://placehold.co/100x100'">
                             <div class="flex-1 min-w-0">
-                                <p class="font-bold text-sm text-slate-800 truncate">{{ $menu->name }}</p>
-                                <p class="text-amber-600 font-bold text-sm mb-2">Rp {{ number_format($menu->price, 0, ',', '.') }}</p>
+                                <p class="font-bold text-sm text-slate-800 truncate"><?php echo e($menu->name); ?></p>
+                                <p class="text-amber-600 font-bold text-sm mb-2">Rp <?php echo e(number_format($menu->price, 0, ',', '.')); ?></p>
                                 <div class="flex gap-2">
                                     <select class="text-xs px-2 py-1 rounded bg-slate-50 border border-slate-200" onchange="alert('Di versi ini, manajemen CRUD menu belum terhubung API untuk update stok, hanya UI demo.')">
-                                        <option value="tersedia" {{ $menu->stock_status == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
-                                        <option value="terbatas" {{ $menu->stock_status == 'terbatas' ? 'selected' : '' }}>Terbatas</option>
-                                        <option value="habis" {{ $menu->stock_status == 'habis' ? 'selected' : '' }}>Habis</option>
+                                        <option value="tersedia" <?php echo e($menu->stock_status == 'tersedia' ? 'selected' : ''); ?>>Tersedia</option>
+                                        <option value="terbatas" <?php echo e($menu->stock_status == 'terbatas' ? 'selected' : ''); ?>>Terbatas</option>
+                                        <option value="habis" <?php echo e($menu->stock_status == 'habis' ? 'selected' : ''); ?>>Habis</option>
                                     </select>
-                                    @if($menu->is_preorder_available)
+                                    <?php if($menu->is_preorder_available): ?>
                                     <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold">PO AKTIF</span>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
 
-                {{-- ===== TAB: CHAT ===== --}}
+                
                 <div x-show="activeTab === 'chat'" x-transition style="display:none;" class="max-w-2xl mx-auto">
                     <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
                         <div class="text-center mb-6">
@@ -306,41 +306,41 @@
                     </div>
                 </div>
 
-                {{-- ===== TAB: FEEDBACKS ===== --}}
+                
                 <div x-show="activeTab === 'feedbacks'" x-transition style="display:none;" class="space-y-4">
-                    @foreach($feedbacks as $fb)
-                    <div class="bg-white p-5 rounded-2xl border {{ $fb->status == 'pending' ? 'border-amber-400 shadow-md ring-1 ring-amber-100' : 'border-slate-200 shadow-sm opacity-70' }}">
+                    <?php $__currentLoopData = $feedbacks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $fb): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="bg-white p-5 rounded-2xl border <?php echo e($fb->status == 'pending' ? 'border-amber-400 shadow-md ring-1 ring-amber-100' : 'border-slate-200 shadow-sm opacity-70'); ?>">
                         <div class="flex justify-between items-start mb-3">
                             <div>
                                 <div class="flex gap-2 items-center mb-1">
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase text-white {{ $fb->type == 'komplain' ? 'bg-rose-500' : ($fb->type == 'saran' ? 'bg-emerald-500' : 'bg-blue-500') }}">{{ $fb->type }}</span>
-                                    <span class="text-xs text-slate-400">{{ $fb->created_at->format('d M Y, H:i') }}</span>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase text-white <?php echo e($fb->type == 'komplain' ? 'bg-rose-500' : ($fb->type == 'saran' ? 'bg-emerald-500' : 'bg-blue-500')); ?>"><?php echo e($fb->type); ?></span>
+                                    <span class="text-xs text-slate-400"><?php echo e($fb->created_at->format('d M Y, H:i')); ?></span>
                                 </div>
-                                <h4 class="font-bold text-slate-800 text-lg">{{ $fb->subject }}</h4>
-                                <p class="text-xs font-semibold text-slate-500">Dari: {{ $fb->name }} {{ $fb->user_id ? '(Member)' : '' }}</p>
+                                <h4 class="font-bold text-slate-800 text-lg"><?php echo e($fb->subject); ?></h4>
+                                <p class="text-xs font-semibold text-slate-500">Dari: <?php echo e($fb->name); ?> <?php echo e($fb->user_id ? '(Member)' : ''); ?></p>
                             </div>
-                            <span class="px-3 py-1 text-xs font-bold rounded-full {{ $fb->status == 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500' }}">{{ strtoupper($fb->status) }}</span>
+                            <span class="px-3 py-1 text-xs font-bold rounded-full <?php echo e($fb->status == 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'); ?>"><?php echo e(strtoupper($fb->status)); ?></span>
                         </div>
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4">
-                            <p class="text-sm text-slate-700">"{{ $fb->message }}"</p>
+                            <p class="text-sm text-slate-700">"<?php echo e($fb->message); ?>"</p>
                         </div>
                         
-                        @if($fb->status == 'pending')
+                        <?php if($fb->status == 'pending'): ?>
                         <div class="flex gap-2">
-                            <input type="text" :id="'fb-reply-' + {{ $fb->id }}" placeholder="Tulis balasan..." class="flex-1 px-4 py-2 text-sm border border-slate-200 rounded-xl focus:border-amber-500">
-                            <button @click="respondFeedback({{ $fb->id }})" class="px-4 py-2 bg-slate-800 text-white font-bold text-sm rounded-xl">Kirim Balasan</button>
+                            <input type="text" :id="'fb-reply-' + <?php echo e($fb->id); ?>" placeholder="Tulis balasan..." class="flex-1 px-4 py-2 text-sm border border-slate-200 rounded-xl focus:border-amber-500">
+                            <button @click="respondFeedback(<?php echo e($fb->id); ?>)" class="px-4 py-2 bg-slate-800 text-white font-bold text-sm rounded-xl">Kirim Balasan</button>
                         </div>
-                        @else
+                        <?php else: ?>
                         <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl">
                             <p class="text-xs font-bold text-emerald-800 mb-1">Respon Admin:</p>
-                            <p class="text-sm text-emerald-700">{{ $fb->response }}</p>
+                            <p class="text-sm text-emerald-700"><?php echo e($fb->response); ?></p>
                         </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
 
-                {{-- ===== MODAL TAMBAH MENU ===== --}}
+                
                 <div x-show="menuModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" style="display:none;">
                     <div class="bg-white w-full max-w-lg rounded-2xl p-6 shadow-2xl relative">
                         <button @click="menuModalOpen = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold text-xl">×</button>
@@ -349,9 +349,9 @@
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1">Kategori</label>
                                 <select x-model="menuForm.category_id" class="w-full px-4 py-2 border rounded-xl bg-slate-50 focus:border-amber-400" required>
-                                    @foreach($categories as $cat)
-                                        <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                                    @endforeach
+                                    <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($cat->id); ?>"><?php echo e($cat->name); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
                             <div>
@@ -402,16 +402,16 @@
         function adminApp() {
             return {
                 activeTab: 'dashboard',
-                selectedYear: {{ now()->year }},
-                reportYear: {{ now()->year }},
+                selectedYear: <?php echo e(now()->year); ?>,
+                reportYear: <?php echo e(now()->year); ?>,
                 announcementText: '',
                 toast: { show: false, type: '', message: '' },
 
-                allSalesData: @json($allSalesData),
-                paymentDist: @json($paymentDistribution),
+                allSalesData: <?php echo json_encode($allSalesData, 15, 512) ?>,
+                paymentDist: <?php echo json_encode($paymentDistribution, 15, 512) ?>,
 
                 menuModalOpen: false,
-                menuForm: { category_id: '{{ $categories->first()?->id ?? "" }}', name: '', description: '', price: '', unit: 'Porsi', stock_status: 'tersedia', is_hot: false, is_preorder_available: true },
+                menuForm: { category_id: '<?php echo e($categories->first()?->id ?? ""); ?>', name: '', description: '', price: '', unit: 'Porsi', stock_status: 'tersedia', is_hot: false, is_preorder_available: true },
 
                 chartInstances: {},
 
@@ -528,7 +528,7 @@
                 async updateOrderStatus(id, status) {
                     try {
                         const res = await fetch(`/admin/orders/${id}/status`, {
-                            method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                            method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>' },
                             body: JSON.stringify({ status })
                         });
                         if(res.ok) this.showToast('success', 'Status pesanan berhasil diupdate!');
@@ -542,7 +542,7 @@
                 async sendAnnouncement() {
                     try {
                         const res = await fetch('/admin/chat/announce', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>' },
                             body: JSON.stringify({ message: this.announcementText })
                         });
                         if(res.ok) {
@@ -553,7 +553,7 @@
                 },
 
                 openMenuModal() {
-                    this.menuForm = { category_id: '{{ $categories->first()?->id ?? "" }}', name: '', description: '', price: '', unit: 'Porsi', stock_status: 'tersedia', is_hot: false, is_preorder_available: true };
+                    this.menuForm = { category_id: '<?php echo e($categories->first()?->id ?? ""); ?>', name: '', description: '', price: '', unit: 'Porsi', stock_status: 'tersedia', is_hot: false, is_preorder_available: true };
                     this.menuModalOpen = true;
                 },
 
@@ -561,7 +561,7 @@
                     try {
                         const res = await fetch('/admin/menus', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Accept': 'application/json' },
                             body: JSON.stringify(this.menuForm)
                         });
                         const data = await res.json();
@@ -582,7 +582,7 @@
                     if(!input.value) return;
                     try {
                         const res = await fetch(`/admin/feedbacks/${id}/respond`, {
-                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>' },
                             body: JSON.stringify({ response: input.value })
                         });
                         if(res.ok) {
@@ -596,3 +596,4 @@
     </script>
 </body>
 </html>
+<?php /**PATH C:\laragon\www\Website_Lapak1Putri2Putra_FixedHendri\resources\views/admin/dashboard.blade.php ENDPATH**/ ?>

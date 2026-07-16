@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
 </head>
 <body class="bg-amber-50 text-slate-800 min-h-screen"
@@ -20,7 +20,7 @@
     x-init="init()"
     @keydown.escape.window="cartOpen = false; reviewModalOpen = false; paymentModalOpen = false; receiptModalOpen = false; feedbackModalOpen = false">
 
-    {{-- ===== TOAST NOTIFICATION ===== --}}
+    
     <div x-show="toast.show" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-4 opacity-0" x-transition:enter-end="translate-y-0 opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="translate-y-4 opacity-0"
         class="fixed top-4 right-4 z-[100] max-w-sm" style="display:none;">
         <div :class="toast.type === 'success' ? 'bg-emerald-600' : toast.type === 'error' ? 'bg-rose-600' : 'bg-blue-600'" class="px-5 py-4 rounded-2xl shadow-2xl text-white">
@@ -29,28 +29,28 @@
         </div>
     </div>
 
-    {{-- ===== OVERLAY CART ===== --}}
+    
     <div x-show="cartOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" @click="cartOpen = false" class="fixed inset-0 bg-black/50 cart-overlay z-40" style="display:none;"></div>
 
-    {{-- ===== STICKY HEADER ===== --}}
+    
     <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-amber-100 shadow-sm">
         <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
             <a href="/" class="flex items-center gap-2 shrink-0">
                 <div class="flex items-center justify-center w-12 h-12 shrink-0">
-                    {{-- SVG Logo: 2 anak perempuan mengapit 1 anak laki-laki --}}
+                    
                     <svg viewBox="0 0 54 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-12 h-9">
-                        {{-- Anak perempuan kiri --}}
+                        
                         <circle cx="6" cy="10" r="4" fill="#F59E0B"/>
                         <path d="M3 19 Q1 22 1 27 H11 Q11 22 9 19" fill="#F59E0B"/>
                         <circle cx="3.5" cy="7" r="1.3" fill="#EC4899"/>
                         <circle cx="8.5" cy="7" r="1.3" fill="#EC4899"/>
                         <path d="M2.5 22 Q6 27 9.5 22 L11 33 H1 Z" fill="#EC4899"/>
-                        {{-- Anak laki-laki tengah (lebih besar) --}}
+                        
                         <circle cx="27" cy="9" r="5.5" fill="#1E40AF"/>
                         <path d="M22 20 Q21 24 21 33 H33 Q33 24 32 20" fill="#1E40AF"/>
                         <rect x="23" y="24" width="3.5" height="9" rx="1" fill="#1D4ED8"/>
                         <rect x="27.5" y="24" width="3.5" height="9" rx="1" fill="#1D4ED8"/>
-                        {{-- Anak perempuan kanan --}}
+                        
                         <circle cx="48" cy="10" r="4" fill="#F59E0B"/>
                         <path d="M45 19 Q43 22 43 27 H53 Q53 22 51 19" fill="#F59E0B"/>
                         <circle cx="45.5" cy="7" r="1.3" fill="#EC4899"/>
@@ -72,17 +72,17 @@
             </div>
 
             <div class="flex items-center gap-2">
-                @auth
-                <a href="{{ auth()->user()->isAdmin() ? '/admin' : '/member' }}" class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors">
+                <?php if(auth()->guard()->check()): ?>
+                <a href="<?php echo e(auth()->user()->isAdmin() ? '/admin' : '/member'); ?>" class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors">
                     <span class="text-emerald-600">👤</span>
-                    <span class="text-xs font-semibold text-emerald-700">{{ auth()->user()->name }}</span>
+                    <span class="text-xs font-semibold text-emerald-700"><?php echo e(auth()->user()->name); ?></span>
                 </a>
-                @else
+                <?php else: ?>
                 <a href="/login" id="btn-login-header" class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors">
                     <span class="text-emerald-600"></span>
                     <span class="text-xs font-semibold text-emerald-700">Login / Daftar</span>
                 </a>
-                @endauth
+                <?php endif; ?>
 
                 <button @click="cartOpen = true" id="btn-cart" class="relative flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white transition-colors shadow-md shadow-amber-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h7m-7 0a1 1 0 100 2 1 1 0 000-2zm7 0a1 1 0 100 2 1 1 0 000-2z"/></svg>
@@ -93,7 +93,7 @@
         </div>
     </header>
 
-    {{-- ===== HERO SECTION ===== --}}
+    
     <section class="hero-gradient border-b border-amber-100">
         <div class="max-w-5xl mx-auto px-4 py-8 sm:py-12">
             <div class="text-center mb-6">
@@ -114,7 +114,7 @@
         </div>
     </section>
 
-    {{-- ===== CATEGORY TABS ===== --}}
+    
     <section class="sticky top-[65px] z-20 bg-white border-b border-amber-100 shadow-sm">
         <div class="max-w-5xl mx-auto px-4">
             <div class="flex gap-2 overflow-x-auto py-3 scrollbar-hide no-scrollbar">
@@ -130,7 +130,7 @@
         </div>
     </section>
 
-    {{-- ===== MENU GRID ===== --}}
+    
     <main class="max-w-5xl mx-auto px-4 py-6 pb-28">
         <div class="flex items-center justify-between mb-4">
             <p class="text-sm text-slate-500">
@@ -159,7 +159,7 @@
                     <div class="p-3">
                         <h3 class="font-bold text-slate-800 text-sm leading-tight mb-1" x-text="item.name"></h3>
                         <p class="text-xs text-slate-500 mb-1 line-clamp-2" x-text="item.description"></p>
-                        {{-- Rating --}}
+                        
                         <div class="flex items-center gap-1 mb-2">
                             <template x-for="s in 5" :key="s">
                                 <span class="text-xs" :class="s <= Math.round(item.avg_rating) ? 'text-amber-400' : 'text-slate-200'" x-text="'★'"></span>
@@ -184,36 +184,37 @@
             </template>
         </div>
 
-        {{-- ===== CUSTOMER REVIEWS SECTION ===== --}}
+        
         <section class="mt-12 mb-8">
             <h2 class="text-xl font-extrabold text-slate-800 mb-6 flex items-center gap-2">⭐ Ulasan Pelanggan</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                @foreach($recentReviews as $review)
+                <?php $__currentLoopData = $recentReviews; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $review): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="bg-white rounded-2xl p-4 shadow-sm border border-amber-50">
                     <div class="flex items-center gap-2 mb-2">
-                        <div class="w-8 h-8 rounded-full {{ $review->is_member ? 'bg-emerald-100' : 'bg-amber-100' }} flex items-center justify-center text-sm">
-                            {{ $review->is_member ? '👑' : '👤' }}
+                        <div class="w-8 h-8 rounded-full <?php echo e($review->is_member ? 'bg-emerald-100' : 'bg-amber-100'); ?> flex items-center justify-center text-sm">
+                            <?php echo e($review->is_member ? '👑' : '👤'); ?>
+
                         </div>
                         <div>
-                            <p class="font-bold text-sm text-slate-700">{{ $review->reviewer_name }}</p>
-                            @if($review->is_member)
+                            <p class="font-bold text-sm text-slate-700"><?php echo e($review->reviewer_name); ?></p>
+                            <?php if($review->is_member): ?>
                             <span class="text-xs text-emerald-600 font-semibold">Sobat Lapak</span>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="flex gap-0.5 mb-2">
-                        @for($s = 1; $s <= 5; $s++)
-                        <span class="text-sm {{ $s <= $review->rating ? 'text-amber-400' : 'text-slate-200' }}">★</span>
-                        @endfor
+                        <?php for($s = 1; $s <= 5; $s++): ?>
+                        <span class="text-sm <?php echo e($s <= $review->rating ? 'text-amber-400' : 'text-slate-200'); ?>">★</span>
+                        <?php endfor; ?>
                     </div>
-                    <p class="text-sm text-slate-600">{{ $review->comment }}</p>
-                    <p class="text-xs text-slate-400 mt-2">{{ $review->menu->name ?? '' }} • {{ $review->created_at->diffForHumans() }}</p>
+                    <p class="text-sm text-slate-600"><?php echo e($review->comment); ?></p>
+                    <p class="text-xs text-slate-400 mt-2"><?php echo e($review->menu->name ?? ''); ?> • <?php echo e($review->created_at->diffForHumans()); ?></p>
                 </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </section>
 
-        {{-- ===== FEEDBACK SECTION ===== --}}
+        
         <section class="mt-8 mb-8">
             <div class="bg-white rounded-3xl p-6 shadow-sm border border-amber-100">
                 <h2 class="text-lg font-extrabold text-slate-800 mb-4">Masukan, Saran & Komplain</h2>
@@ -235,7 +236,7 @@
         </section>
     </main>
 
-    {{-- ===== CART SLIDE-OVER ===== --}}
+    
     <aside x-show="cartOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" class="fixed right-0 top-0 h-full w-full sm:w-96 bg-white z-50 shadow-2xl flex flex-col" style="display:none;">
         <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-gradient-to-r from-amber-50 to-white">
             <div>
@@ -303,7 +304,7 @@
         </div>
     </aside>
 
-    {{-- ===== PAYMENT MODAL ===== --}}
+    
     <div x-show="paymentModalOpen" x-transition class="fixed inset-0 z-[60] flex items-center justify-center p-4" style="display:none;">
         <div @click="paymentModalOpen = false" class="absolute inset-0 bg-black/60 cart-overlay"></div>
         <div class="relative bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden z-10 max-h-[90vh] overflow-y-auto">
@@ -315,7 +316,7 @@
                 <p class="text-blue-100 text-sm mt-1">Total: <span class="font-bold" x-text="formatRupiah(cartTotal)"></span></p>
             </div>
             <div class="p-6 space-y-4">
-                {{-- E-Wallet --}}
+                
                 <div>
                     <h3 class="font-bold text-slate-700 text-sm mb-3">E-Wallet</h3>
                     <div class="grid grid-cols-3 gap-2">
@@ -333,7 +334,7 @@
                         </button>
                     </div>
                 </div>
-                {{-- Bank Transfer --}}
+                
                 <div>
                     <h3 class="font-bold text-slate-700 text-sm mb-3">Bank Transfer (Virtual Account)</h3>
                     <div class="grid grid-cols-3 gap-2">
@@ -351,7 +352,7 @@
                         </button>
                     </div>
                 </div>
-                {{-- QRIS --}}
+                
                 <div>
                     <h3 class="font-bold text-slate-700 text-sm mb-3">QRIS</h3>
                     <button @click="selectPayment('qris')" :class="selectedPayment === 'qris' ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200' : 'border-slate-200'" class="w-full p-4 rounded-xl border-2 text-center transition-all hover:border-emerald-300">
@@ -361,7 +362,7 @@
                     </button>
                 </div>
 
-                {{-- QRIS QR Code Display: dibuat ulang tiap kali dibuka, isinya unik per transaksi --}}
+                
                 <div x-show="selectedPayment === 'qris'" x-effect="selectedPayment === 'qris' && renderQris()" class="text-center p-4 bg-slate-50 rounded-2xl border border-slate-200" style="display:none;">
                     <div class="relative w-48 h-48 mx-auto bg-white rounded-xl border-2 border-slate-300 flex items-center justify-center mb-3 qris-container p-2" id="qris-box"></div>
                     <p class="text-sm font-semibold text-slate-700">Scan QR Code di atas</p>
@@ -377,7 +378,7 @@
         </div>
     </div>
 
-    {{-- ===== RECEIPT MODAL ===== --}}
+    
     <div x-show="receiptModalOpen" x-transition class="fixed inset-0 z-[70] flex items-center justify-center p-4" style="display:none;">
         <div @click="receiptModalOpen = false" class="absolute inset-0 bg-black/60 cart-overlay"></div>
         <div class="relative bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden z-10 max-h-[90vh] overflow-y-auto">
@@ -425,7 +426,7 @@
         </div>
     </div>
 
-    {{-- ===== REVIEW MODAL ===== --}}
+    
     <div x-show="reviewModalOpen" x-transition class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4" style="display:none;">
         <div @click="reviewModalOpen = false" class="absolute inset-0 bg-black/50 cart-overlay"></div>
         <div class="relative bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden z-10 max-h-[80vh] overflow-y-auto">
@@ -436,7 +437,7 @@
                 <h2 class="text-white font-extrabold text-lg" x-text="'⭐ Ulasan: ' + (reviewMenuItem?.name || '')"></h2>
             </div>
             <div class="p-5 space-y-4">
-                {{-- Existing Reviews --}}
+                
                 <div class="space-y-3 max-h-48 overflow-y-auto">
                     <template x-for="r in menuReviews" :key="r.id">
                         <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
@@ -452,7 +453,7 @@
                     </template>
                     <p x-show="menuReviews.length === 0" class="text-center text-slate-400 text-sm py-4">Belum ada ulasan untuk menu ini</p>
                 </div>
-                {{-- Write Review --}}
+                
                 <div class="border-t border-slate-100 pt-4">
                     <h3 class="font-bold text-sm text-slate-700 mb-3">✍️ Tulis Ulasan</h3>
                     <div class="flex gap-1 mb-3">
@@ -468,7 +469,7 @@
         </div>
     </div>
 
-    {{-- ===== FEEDBACK MODAL ===== --}}
+    
     <div x-show="feedbackModalOpen" x-transition class="fixed inset-0 z-[60] flex items-center justify-center p-4" style="display:none;">
         <div @click="feedbackModalOpen = false" class="absolute inset-0 bg-black/50 cart-overlay"></div>
         <div class="relative bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden z-10">
@@ -488,7 +489,7 @@
         </div>
     </div>
 
-    {{-- ===== BOTTOM NAV ===== --}}
+    
     <nav class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-amber-100 shadow-lg">
         <div class="max-w-5xl mx-auto flex">
             <a href="/" class="bottom-nav-item active flex-1 flex flex-col items-center py-2.5 gap-0.5 transition-colors">
@@ -502,21 +503,21 @@
                 </div>
                 <span class="nav-label text-xs text-slate-400 font-medium">Keranjang</span>
             </button>
-            @auth
+            <?php if(auth()->guard()->check()): ?>
             <a href="/member" class="bottom-nav-item flex-1 flex flex-col items-center py-2.5 gap-0.5 transition-colors">
                 <svg class="nav-icon w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 <span class="nav-label text-xs text-slate-400 font-medium">Sobat Lapak</span>
             </a>
-            @else
+            <?php else: ?>
             <a href="/login" class="bottom-nav-item flex-1 flex flex-col items-center py-2.5 gap-0.5 transition-colors">
                 <svg class="nav-icon w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 <span class="nav-label text-xs text-slate-400 font-medium">Login</span>
             </a>
-            @endauth
+            <?php endif; ?>
         </div>
     </nav>
 
-    {{-- ===== FOOTER ===== --}}
+    
     <footer class="bg-slate-800 text-white pb-24">
         <div class="max-w-5xl mx-auto px-4 py-10">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
@@ -568,14 +569,14 @@
                 feedbackType: 'masukan',
                 checkout: { nama: '', hp: '', alamat: '', catatan: '' },
                 cart: [],
-                categories: @json($categories),
-                menus: @json($menus),
+                categories: <?php echo json_encode($categories, 15, 512) ?>,
+                menus: <?php echo json_encode($menus, 15, 512) ?>,
                 reviewMenuItem: null, menuReviews: [],
                 newReview: { rating: 5, name: '', comment: '' },
                 feedbackForm: { name: '', email: '', subject: '', message: '' },
                 receiptData: { order_number: '', date: '', payment_method: '', items: [], subtotal: 0, discount: 0, total: 0, points_earned: 0 },
                 toast: { show: false, type: 'success', title: '', message: '' },
-                guestTransactionCount: {{ session('guest_transaction_count', 0) }},
+                guestTransactionCount: <?php echo e(session('guest_transaction_count', 0)); ?>,
 
                 get filteredMenus() {
                     return this.menus.filter(item => {
@@ -592,11 +593,11 @@
                     const saved = localStorage.getItem('lapak_cart');
                     if (saved) this.cart = JSON.parse(saved);
                     this.$watch('cart', val => localStorage.setItem('lapak_cart', JSON.stringify(val)));
-                    @auth
-                    this.checkout.nama = '{{ auth()->user()->name }}';
-                    this.checkout.hp = '{{ auth()->user()->phone }}';
-                    this.checkout.alamat = '{{ auth()->user()->address }}';
-                    @endauth
+                    <?php if(auth()->guard()->check()): ?>
+                    this.checkout.nama = '<?php echo e(auth()->user()->name); ?>';
+                    this.checkout.hp = '<?php echo e(auth()->user()->phone); ?>';
+                    this.checkout.alamat = '<?php echo e(auth()->user()->address); ?>';
+                    <?php endif; ?>
                 },
                 formatRupiah(n) { return 'Rp ' + n.toLocaleString('id-ID'); },
                 showToast(type, title, message) {
@@ -636,13 +637,13 @@
                     try {
                         const items = this.cart.map(c => ({ menu_id: c.id, quantity: c.qty }));
                         const res = await fetch('/checkout', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Accept': 'application/json' },
                             body: JSON.stringify({ customer_name: this.checkout.nama, customer_phone: this.checkout.hp, customer_address: this.checkout.alamat, notes: this.checkout.catatan, payment_method: this.selectedPayment, items })
                         });
                         const data = await res.json();
                         if (data.success) {
                             const payRes = await fetch('/payment/process', {
-                                method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                                method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Accept': 'application/json' },
                                 body: JSON.stringify({ order_id: data.order.id, payment_method: this.selectedPayment })
                             });
                             const payData = await payRes.json();
@@ -667,11 +668,11 @@
                 resetCheckout() {
                     this.cart = []; this.checkout = { nama: '', hp: '', alamat: '', catatan: '' };
                     this.selectedPayment = ''; localStorage.removeItem('lapak_cart');
-                    @auth
-                    this.checkout.nama = '{{ auth()->user()->name }}';
-                    this.checkout.hp = '{{ auth()->user()->phone }}';
-                    this.checkout.alamat = '{{ auth()->user()->address }}';
-                    @endauth
+                    <?php if(auth()->guard()->check()): ?>
+                    this.checkout.nama = '<?php echo e(auth()->user()->name); ?>';
+                    this.checkout.hp = '<?php echo e(auth()->user()->phone); ?>';
+                    this.checkout.alamat = '<?php echo e(auth()->user()->address); ?>';
+                    <?php endif; ?>
                 },
                 async openReviewModal(item) {
                     this.reviewMenuItem = item; this.menuReviews = [];
@@ -685,7 +686,7 @@
                     if (!this.newReview.name.trim()) { this.showToast('error', '⚠️', 'Mohon isi nama!'); return; }
                     try {
                         await fetch('/review', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Accept': 'application/json' },
                             body: JSON.stringify({ menu_id: this.reviewMenuItem.id, rating: this.newReview.rating, comment: this.newReview.comment, reviewer_name: this.newReview.name })
                         });
                         this.showToast('success', '⭐', 'Ulasan berhasil dikirim!');
@@ -699,7 +700,7 @@
                     }
                     try {
                         await fetch('/feedback', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Accept': 'application/json' },
                             body: JSON.stringify({ ...this.feedbackForm, type: this.feedbackType })
                         });
                         this.showToast('success', '✅', 'Terima kasih atas masukan Anda!');
@@ -712,3 +713,4 @@
     </script>
 </body>
 </html>
+<?php /**PATH C:\laragon\www\Website_Lapak1Putri2Putra_FixedHendri\resources\views/welcome.blade.php ENDPATH**/ ?>

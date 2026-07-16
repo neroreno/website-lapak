@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
 </head>
 <body class="bg-amber-50 text-slate-800 min-h-screen"
@@ -17,7 +17,7 @@
     x-init="init()"
     @keydown.escape.window="cartOpen = false; reviewModalOpen = false; preorderModalOpen = false; receiptModalOpen = false">
 
-    {{-- ===== TOAST NOTIFICATION ===== --}}
+    
     <div x-show="toast.show" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-4 opacity-0" x-transition:enter-end="translate-y-0 opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="translate-y-4 opacity-0"
         class="fixed top-4 right-4 z-[100] max-w-sm" style="display:none;">
         <div :class="toast.type === 'success' ? 'bg-emerald-600' : toast.type === 'error' ? 'bg-rose-600' : 'bg-blue-600'" class="px-5 py-4 rounded-2xl shadow-2xl text-white">
@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    {{-- ===== STICKY HEADER ===== --}}
+    
     <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-amber-100 shadow-sm">
         <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
             <a href="/" class="flex items-center gap-2 shrink-0">
@@ -68,7 +68,7 @@
                     <span x-show="cartCount > 0" x-text="cartCount" class="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-rose-500 text-white text-xs font-bold flex items-center justify-center badge-pulse" style="display:none;"></span>
                 </button>
                 <form action="/logout" method="POST" class="inline">
-                    @csrf
+                    <?php echo csrf_field(); ?>
                     <button type="submit" class="p-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors" title="Logout">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                     </button>
@@ -79,20 +79,20 @@
 
     <main class="max-w-5xl mx-auto px-4 py-6 pb-28">
 
-        {{-- ===== TAB: KATALOG (PRE-ORDER) ===== --}}
+        
         <div x-show="activeTab === 'katalog'" x-transition>
             <div class="mb-6 p-5 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-600 text-white shadow-lg shadow-amber-200/50 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-2xl font-extrabold mb-1">Halo, {{ $user->name }}! 👑</h1>
+                    <h1 class="text-2xl font-extrabold mb-1">Halo, <?php echo e($user->name); ?>! 👑</h1>
                     <p class="text-amber-50 text-sm">Pesanan khusus member Sobat Lapak. Pesan untuk hari ini atau PreOrder untuk besok!</p>
                 </div>
                 <div class="bg-white/20 px-4 py-2.5 rounded-xl border border-white/30 text-center shrink-0">
                     <p class="text-xs text-amber-50 font-medium">Poin Anda</p>
-                    <p class="text-2xl font-black">{{ $user->points }}<span class="text-base ml-1">⭐</span></p>
+                    <p class="text-2xl font-black"><?php echo e($user->points); ?><span class="text-base ml-1">⭐</span></p>
                 </div>
             </div>
 
-            {{-- Categories --}}
+            
             <div class="flex gap-2 overflow-x-auto py-2 mb-4 scrollbar-hide no-scrollbar">
                 <button @click="activeCategory = 'semua'" :class="activeCategory === 'semua' ? 'category-tab-active' : 'bg-white border border-slate-200 text-slate-600 hover:bg-amber-50 hover:text-amber-700'" class="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm">
                     <span>🍽️</span><span>Semua Menu</span>
@@ -132,30 +132,30 @@
                 </template>
             </div>
 
-            {{-- Member Reviews Exclusives --}}
+            
             <div class="mt-12 bg-white rounded-3xl shadow-sm border border-amber-100 p-6">
                 <h2 class="text-xl font-extrabold text-slate-800 mb-6 flex items-center gap-2">👑 Ulasan Sobat Lapak</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @foreach($memberReviews as $review)
+                    <?php $__currentLoopData = $memberReviews; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $review): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="bg-amber-50 rounded-2xl p-4 border border-amber-100">
                         <div class="flex items-center gap-3 mb-2">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold">{{ substr($review->reviewer_name, 0, 1) }}</div>
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold"><?php echo e(substr($review->reviewer_name, 0, 1)); ?></div>
                             <div>
-                                <p class="font-bold text-sm text-slate-800">{{ $review->reviewer_name }}</p>
-                                <p class="text-xs text-amber-600 font-semibold">{{ $review->menu->name ?? 'Menu' }}</p>
+                                <p class="font-bold text-sm text-slate-800"><?php echo e($review->reviewer_name); ?></p>
+                                <p class="text-xs text-amber-600 font-semibold"><?php echo e($review->menu->name ?? 'Menu'); ?></p>
                             </div>
                             <div class="ml-auto text-amber-400 text-sm tracking-widest">
-                                @for($i = 0; $i < $review->rating; $i++)★@endfor
+                                <?php for($i = 0; $i < $review->rating; $i++): ?>★<?php endfor; ?>
                             </div>
                         </div>
-                        <p class="text-sm text-slate-700 italic">"{{ $review->comment }}"</p>
+                        <p class="text-sm text-slate-700 italic">"<?php echo e($review->comment); ?>"</p>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
         </div>
 
-        {{-- ===== TAB: CHAT ROOM ===== --}}
+        
         <div x-show="activeTab === 'chat'" x-transition style="display:none;" class="bg-white rounded-3xl shadow-sm border border-amber-100 overflow-hidden flex flex-col h-[70vh]">
             <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 p-4 shrink-0">
                 <h2 class="text-white font-extrabold text-lg flex items-center gap-2">💬 Sobat Lapak Chat Room</h2>
@@ -165,15 +165,15 @@
             <div id="chat-container" class="flex-1 p-4 overflow-y-auto bg-slate-50 space-y-4">
                 <template x-for="chat in chats" :key="chat.id">
                     <div>
-                        {{-- Admin Announcement --}}
+                        
                         <div x-show="chat.type === 'admin_announcement'" class="my-4 max-w-lg mx-auto bg-amber-100 border border-amber-300 rounded-2xl p-4 shadow-sm text-center">
                             <p class="text-xs font-bold text-amber-700 mb-1">📢 PENGUMUMAN LAPAK</p>
                             <p class="text-sm text-amber-900 font-semibold" x-text="chat.message"></p>
                             <p class="text-[10px] text-amber-600 mt-2" x-text="new Date(chat.created_at).toLocaleString('id-ID')"></p>
                         </div>
 
-                        {{-- Member Chat (Own) --}}
-                        <div x-show="chat.type === 'member' && chat.user_id === {{ $user->id }}" class="flex justify-end mb-2">
+                        
+                        <div x-show="chat.type === 'member' && chat.user_id === <?php echo e($user->id); ?>" class="flex justify-end mb-2">
                             <div class="max-w-[75%]">
                                 <p class="text-[10px] text-slate-400 text-right mb-0.5" x-text="chat.user?.name + ' (Anda)'"></p>
                                 <div class="bg-emerald-500 text-white p-3 rounded-2xl rounded-tr-none shadow-sm">
@@ -183,8 +183,8 @@
                             </div>
                         </div>
 
-                        {{-- Member Chat (Other) --}}
-                        <div x-show="chat.type === 'member' && chat.user_id !== {{ $user->id }}" class="flex justify-start mb-2">
+                        
+                        <div x-show="chat.type === 'member' && chat.user_id !== <?php echo e($user->id); ?>" class="flex justify-start mb-2">
                             <div class="max-w-[75%]">
                                 <p class="text-[10px] text-slate-500 mb-0.5 font-semibold" x-text="chat.user?.name"></p>
                                 <div class="bg-white border border-slate-200 text-slate-700 p-3 rounded-2xl rounded-tl-none shadow-sm">
@@ -205,7 +205,7 @@
             </div>
         </div>
 
-        {{-- ===== TAB: RIWAYAT ===== --}}
+        
         <div x-show="activeTab === 'riwayat'" x-transition style="display:none;" class="space-y-4">
             <h2 class="text-xl font-extrabold text-slate-800 mb-4 flex items-center gap-2">📋 Riwayat Belanja (30 Hari Terakhir)</h2>
             
@@ -253,7 +253,7 @@
             </div>
         </div>
 
-        {{-- ===== TAB: PROFIL ===== --}}
+        
         <div x-show="activeTab === 'profil'" x-transition style="display:none;" class="space-y-6">
             
             <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-amber-100">
@@ -268,7 +268,7 @@
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {{-- Points & Level --}}
+                        
                         <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="text-sm font-semibold text-slate-600">⭐ Akumulasi Poin</span>
@@ -291,7 +291,7 @@
                             </div>
                         </div>
 
-                        {{-- Inventaris Voucher --}}
+                        
                         <div class="p-5 rounded-2xl bg-amber-50 border border-amber-200">
                             <h3 class="font-bold text-sm text-slate-700 mb-3">🎫 Inventaris Voucher Saya</h3>
                             <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
@@ -317,7 +317,7 @@
                             </div>
                         </div>
 
-                        {{-- Edit Profile Form --}}
+                        
                         <div class="space-y-3">
                             <h3 class="font-bold text-sm text-slate-700 mb-2">Ubah Data Diri</h3>
                             <div>
@@ -338,7 +338,7 @@
                 </div>
             </div>
             
-            {{-- Point History --}}
+            
             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="px-5 py-4 border-b border-slate-100"><h3 class="font-bold text-slate-700">📋 Riwayat Poin Terakhir</h3></div>
                 <div class="divide-y divide-slate-50">
@@ -359,7 +359,7 @@
         </div>
     </main>
 
-    {{-- ===== CART PREORDER SLIDE-OVER ===== --}}
+    
     <aside x-show="cartOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" class="fixed right-0 top-0 h-full w-full sm:w-96 bg-white z-50 shadow-2xl flex flex-col" style="display:none;">
         <div class="flex items-center justify-between px-5 py-4 border-b border-emerald-100 bg-gradient-to-r from-emerald-50 to-white">
             <div>
@@ -432,7 +432,7 @@
         </div>
     </aside>
 
-    {{-- ===== BOTTOM NAV ===== --}}
+    
     <nav class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-amber-100 shadow-lg sm:hidden">
         <div class="flex justify-around">
             <button @click="activeTab = 'katalog'" class="p-3 text-center flex-1" :class="activeTab==='katalog'?'text-amber-600':'text-slate-400'"><div class="text-xl">🍽️</div><span class="text-[10px] font-bold">Menu</span></button>
@@ -442,7 +442,7 @@
         </div>
     </nav>
 
-    {{-- ===== FOOTER ===== --}}
+    
     <footer class="bg-slate-800 text-white pb-24 sm:pb-8 mt-12">
         <div class="max-w-5xl mx-auto px-4 py-8">
             <div class="text-center">
@@ -460,15 +460,15 @@
             return {
                 activeTab: 'katalog', search: '', activeCategory: 'semua',
                 cartOpen: false, loading: false,
-                cart: [], categories: @json($categories), menus: @json($menus),
-                user: @json($user),
-                orders: @json($recentOrders),
-                pointHistories: @json($pointHistories),
-                chats: @json($chatMessages),
-                vouchers: @json($vouchers ?? []),
+                cart: [], categories: <?php echo json_encode($categories, 15, 512) ?>, menus: <?php echo json_encode($menus, 15, 512) ?>,
+                user: <?php echo json_encode($user, 15, 512) ?>,
+                orders: <?php echo json_encode($recentOrders, 15, 512) ?>,
+                pointHistories: <?php echo json_encode($pointHistories, 15, 512) ?>,
+                chats: <?php echo json_encode($chatMessages, 15, 512) ?>,
+                vouchers: <?php echo json_encode($vouchers ?? [], 15, 512) ?>,
                 paymentMethod: '', notes: '', chatInput: '',
                 isPreorder: '0', selectedVoucherId: '',
-                profileForm: { name: '{{ $user->name }}', phone: '{{ $user->phone }}', address: '{{ $user->address }}' },
+                profileForm: { name: '<?php echo e($user->name); ?>', phone: '<?php echo e($user->phone); ?>', address: '<?php echo e($user->address); ?>' },
                 toast: { show: false, type: '', title: '', message: '' },
 
                 get filteredMenus() {
@@ -560,7 +560,7 @@
                     if(!this.chatInput.trim()) return;
                     try {
                         const res = await fetch('/member/chat', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Accept': 'application/json' },
                             body: JSON.stringify({ message: this.chatInput })
                         });
                         const data = await res.json();
@@ -575,7 +575,7 @@
                 async updateProfile() {
                     try {
                         const res = await fetch('/member/profile', {
-                            method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                            method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Accept': 'application/json' },
                             body: JSON.stringify(this.profileForm)
                         });
                         const data = await res.json();
@@ -590,7 +590,7 @@
                     if(!confirm('Tukar ' + pointsNeeded + ' Poin untuk Voucher ini?')) return;
                     try {
                         const res = await fetch('/member/vouchers/exchange', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Accept': 'application/json' },
                             body: JSON.stringify({ type })
                         });
                         const data = await res.json();
@@ -608,7 +608,7 @@
                     if(!confirm('Aktifkan voucher ini sekarang? Voucher hanya berlaku 24 jam setelah diaktifkan.')) return;
                     try {
                         const res = await fetch('/member/vouchers/activate', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Accept': 'application/json' },
                             body: JSON.stringify({ voucher_id: voucherId })
                         });
                         const data = await res.json();
@@ -627,7 +627,7 @@
                     try {
                         const items = this.cart.map(c => ({ menu_id: c.id, quantity: c.qty }));
                         const res = await fetch('/member/checkout', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Accept': 'application/json' },
                             body: JSON.stringify({ 
                                 payment_method: this.paymentMethod, 
                                 notes: this.notes, 
@@ -652,4 +652,4 @@
         }
     </script>
 </body>
-</html>
+</html><?php /**PATH C:\laragon\www\Website_Lapak1Putri2Putra_FixedHendri\resources\views/member.blade.php ENDPATH**/ ?>
